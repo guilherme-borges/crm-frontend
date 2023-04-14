@@ -5,9 +5,11 @@ import { useState, useEffect } from 'react'
 function Home() {
 
   const [oportunidades, setOportunidades] = useState([])
+  const [clientes, setClientes] = useState([])
 
   useEffect(() => {
     buscarOportunidades()
+    buscarClientes()
   }, [])
 
   const instance = axios.create({
@@ -18,7 +20,16 @@ function Home() {
     try {
       const response = await instance.get('/oportunidades')
       setOportunidades(response.data)
-      console.log(oportunidades);
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  async function buscarClientes() {
+    try {
+      const response = await instance.get('/clientes')
+      setClientes(response.data)
+      console.log(clientes)
     } catch (error) {
       console.error(error)
     }
@@ -40,9 +51,11 @@ function Home() {
                 <label htmlFor="cbxClientes" className="form-label">Clientes</label>
                 <select className="form-select" aria-label="Default select example" id="cbxClientes">
                   <option selected>Selecione o cliente</option>
-                  <option value="1">Cliente 1</option>
-                  <option value="2">Cliente 2</option>
-                  <option value="3">Cliente 3</option>
+                  {
+                    clientes.map((cliente) => (
+                      <option key={cliente.id}>{cliente.nome}</option>
+                    ))
+                  }
                 </select>
               </div>
               <div className="mb-3">
@@ -88,8 +101,8 @@ function Home() {
           <tbody>
 
             {
-              oportunidades.map((oportunidade) => {
-                <tr>
+              oportunidades.map((oportunidade) => (
+                <tr key={oportunidade.id}>
                   <td>
                     <button
                       type="button"
@@ -101,7 +114,7 @@ function Home() {
                   <td>{oportunidade.cliente.nome}</td>
                   <td>R$ {oportunidade.valor}</td>
                 </tr>
-              })
+              ))
             }
 
           </tbody>
