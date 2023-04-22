@@ -6,10 +6,17 @@ function Home() {
 
   const [oportunidades, setOportunidades] = useState([])
   const [clientes, setClientes] = useState([])
+  const [projetos, setProjetos] = useState([])
+
+  const [oportunidadeId, setOportunidadeId] = useState(0)
+  const [clienteId, setClienteId] = useState(0)
+  const [projetoId, setProjetoId] = useState(0)
+  const [valor, setValor] = useState(0)
 
   useEffect(() => {
     buscarOportunidades()
     buscarClientes()
+    buscarProjetos()
   }, [])
 
   const instance = axios.create({
@@ -35,6 +42,54 @@ function Home() {
     }
   }
 
+  async function buscarProjetos() {
+    try {
+      const response = await instance.get('/projetos')
+      setProjetos(response.data)
+      console.log(projetos)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  async function salvar() {
+    try {
+
+      const response = await instance.post('/oportunidades', {
+        id: oportunidadeId,
+        cliente: {
+          id: clienteId
+        },
+        projeto: {
+          id: projetoId
+        },
+        valor: valor
+      })
+
+      buscarOportunidades()
+
+      alert("Oportunidade salva.")
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  function carregarCampos(oportunidade) {
+    setOportunidadeId(oportunidade.id)
+    setValor(oportunidade.valor)
+
+    setClienteId(oportunidade.cliente.id)
+    setProjetoId(oportunidade.projeto.id)
+
+  }
+
+  function limparCampos() {
+    setOportunidadeId(0)
+    setValor(0)
+    setClienteId(0)
+    setProjetoId(0)
+  }
+
   return (
     <>
       <Menu />
@@ -49,33 +104,59 @@ function Home() {
             <div className="modal-body">
               <div className="mb-3">
                 <label htmlFor="cbxClientes" className="form-label">Clientes</label>
-                <select className="form-select" aria-label="Default select example" id="cbxClientes">
+                <select
+                  className="form-select"
+                  aria-label="Default select example"
+                  id="cbxClientes"
+                  onChange={(e) => setClienteId(e.target.value)}
+                  value={clienteId}
+                >
                   <option selected>Selecione o cliente</option>
                   {
                     clientes.map((cliente) => (
-                      <option key={cliente.id}>{cliente.nome}</option>
+                      <option key={cliente.id} value={cliente.id} >{cliente.nome}</option>
                     ))
                   }
                 </select>
               </div>
               <div className="mb-3">
                 <label htmlFor="cbxProjetos" className="form-label">Projetos</label>
-                <select className="form-select" aria-label="Default select example" id="cbxProjetos">
+                <select
+                  className="form-select"
+                  aria-label="Default select example"
+                  id="cbxProjetos"
+                  onChange={(e) => setProjetoId(e.target.value)}
+                  value={projetoId}
+                >
                   <option selected>Selecione o projeto</option>
-                  <option value="1">Projeto 1</option>
-                  <option value="2">Projeto 2</option>
-                  <option value="3">Projeto 3</option>
+                  {
+                    projetos.map((projeto) => (
+                      <option key={projeto.id} value={projeto.id} >{projeto.nome}</option>
+                    ))
+                  }
                 </select>
               </div>
               <label htmlFor="txtValor" className="form-label">Valor</label>
               <div className="input-group mb-3">
                 <span className="input-group-text">R$</span>
-                <input type="number" className="form-control" id="txtValor" />
+                <input
+                  type="number"
+                  className="form-control"
+                  id="txtValor"
+                  onChange={(e) => setValor(e.target.value)}
+                  value={valor}
+                />
               </div>
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-              <button type="button" className="btn btn-primary">Salvar</button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => salvar()}
+              >
+                Salvar
+              </button>
             </div>
           </div>
         </div>
@@ -83,7 +164,13 @@ function Home() {
 
       <main className="container mt-5">
         <div className="d-flex justify-content-end">
-          <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          <button
+            type="button"
+            className="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#exampleModal"
+            onClick={() => limparCampos()}
+          >
             <i className="bi bi-plus-lg"></i>
             Novo
           </button>
@@ -107,9 +194,21 @@ function Home() {
                     <button
                       type="button"
                       className="btn btn-success"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleModal"
+                      onClick={() => carregarCampos(oportunidade)}
                     >
-                      <i className="bi bi-pencil-fill"></i></button></td>
-                  <td><button type="button" className="btn btn-danger"><i className="bi bi-trash-fill"></i></button></td>
+                      <i className="bi bi-pencil-fill"></i>
+                    </button>
+                  </td>
+                  <td>
+                    <button 
+                      type="button" 
+                      className="btn btn-danger"
+                    >
+                      <i className="bi bi-trash-fill"></i>
+                    </button>
+                  </td>
                   <td>{oportunidade.projeto.nome}</td>
                   <td>{oportunidade.cliente.nome}</td>
                   <td>R$ {oportunidade.valor}</td>
