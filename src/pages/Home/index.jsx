@@ -74,13 +74,22 @@ function Home() {
     }
   }
 
+  async function excluir(id) {
+    try {
+      await instance.delete(`/oportunidades/${id}`)
+      buscarOportunidades()
+      alert("Oportunidade excluída.")
+    } catch (error) {
+      console.log(error)
+      alert("Erro ao tentar excluir oportunidade.")
+    }
+  }
+
   function carregarCampos(oportunidade) {
     setOportunidadeId(oportunidade.id)
     setValor(oportunidade.valor)
-
     setClienteId(oportunidade.cliente.id)
     setProjetoId(oportunidade.projeto.id)
-
   }
 
   function limparCampos() {
@@ -205,6 +214,7 @@ function Home() {
                     <button 
                       type="button" 
                       className="btn btn-danger"
+                      onClick={() => excluir(oportunidade.id)}
                     >
                       <i className="bi bi-trash-fill"></i>
                     </button>
