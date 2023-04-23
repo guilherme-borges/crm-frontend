@@ -68,7 +68,6 @@ function Home() {
 
       buscarOportunidades()
 
-      alert("Oportunidade salva.")
     } catch (error) {
       console.error(error)
     }
@@ -78,7 +77,6 @@ function Home() {
     try {
       await instance.delete(`/oportunidades/${id}`)
       buscarOportunidades()
-      alert("Oportunidade excluída.")
     } catch (error) {
       console.log(error)
       alert("Erro ao tentar excluir oportunidade.")
