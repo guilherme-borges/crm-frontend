@@ -19,9 +19,6 @@ function Menu() {
             <li className="nav-item">
               <Link className="nav-link" to={'/projetos'}>Projetos</Link>
             </li>
-            <li className="nav-item">
-              <a className="nav-link">Relatórios</a>
-            </li>
           </ul>
         </div>
       </div>
